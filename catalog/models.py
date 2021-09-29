@@ -24,6 +24,7 @@ class Genre(models.Model):
         verbose_name = 'жанр'
         verbose_name = 'жанры'
 
+
     def __str__(self):
         return self.name
 
@@ -42,8 +43,8 @@ class Country(models.Model):
 
 class Actor(models.Model):
     name = models.CharField(max_length=255, verbose_name='ФИО')
-    photo = models.ImageField(upload_to='actors', verbose_name='фото')
-    about = models.TextField(blank=True, verbose_name='биография')
+    photo = models.ImageField(upload_to='actors', blank=True, null=True, verbose_name='Фото')
+    about = models.TextField(blank=True, verbose_name='Биография')
 
     class Meta:
         verbose_name = 'актера'
@@ -55,7 +56,7 @@ class Actor(models.Model):
 
 class Director(models.Model):
     name = models.CharField(max_length=255, verbose_name='ФИО')
-    photo = models.ImageField(upload_to='directors', verbose_name='фото')
+    photo = models.ImageField(upload_to='directors', blank=True, null=True, verbose_name='фото')
     about = models.TextField(blank=True, verbose_name='биография')
 
     class Meta:
@@ -75,7 +76,7 @@ class Movie(models.Model):
     )
     title = models.CharField(max_length=255, verbose_name='Название')
     url = models.SlugField(max_length=255, unique=True, verbose_name='Ссылка')
-    tagline = models.CharField(max_length=255, default='', verbose_name='Слоган')
+    tagline = models.CharField(max_length=255, blank=True, verbose_name='Слоган')
     description = models.TextField(verbose_name='Описание')
     poster = models.ImageField(upload_to='movies', verbose_name='Постер')
     year = models.PositiveSmallIntegerField(default=timezone.now().year, verbose_name='Год')
@@ -110,7 +111,7 @@ class MovieShot(models.Model):
         return self.title
 
 
-class RaitingStar(models.Model):
+class RatingStar(models.Model):
     value = models.PositiveSmallIntegerField(default=0, verbose_name='Значение')
 
     class Meta:
@@ -122,8 +123,8 @@ class RaitingStar(models.Model):
 
 
 class Rating(models.Model):
-    ip = models.CharField(max_length=15, verbose_name='IP адрес')
-    star = models.ForeignKey(RaitingStar, on_delete=models.CASCADE, verbose_name='Звезда')
+    ip = models.CharField(max_length=15, verbose_name='IP адресс')
+    star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Звезда')
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм')
 
     class Meta:
