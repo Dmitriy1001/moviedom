@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -78,6 +79,7 @@ class Movie(models.Model):
     url = models.SlugField(max_length=255, unique=True, verbose_name='Ссылка')
     tagline = models.CharField(max_length=255, blank=True, verbose_name='Слоган')
     description = models.TextField(verbose_name='Описание')
+    trailer_url = models.URLField(blank=True, verbose_name='Ссылка на трейлер')
     poster = models.ImageField(upload_to='movies', verbose_name='Постер')
     year = models.PositiveSmallIntegerField(default=timezone.now().year, verbose_name='Год')
     country = models.ManyToManyField(Country, related_name='movies', verbose_name='Страна')
@@ -93,13 +95,20 @@ class Movie(models.Model):
         verbose_name = 'фильм'
         verbose_name_plural = 'фильмы'
 
+    def get_absolute_url(self):
+        return reverse('movie_detail', kwargs={'movie_url': self.url})
+
     def __str__(self):
         return self.title
 
 
 class MovieShot(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм')
+    movie = models.ForeignKey(
+        Movie, on_delete=models.CASCADE,
+        related_name='shots',
+        verbose_name='Фильм'
+    )
     description = models.TextField(blank=True, verbose_name='Описание')
     image = models.ImageField(upload_to='movie_shots', verbose_name='Изображение')
 

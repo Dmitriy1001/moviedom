@@ -1,0 +1,14 @@
+{% load catalog_tags %}
+
+<div class="left-side">
+    <h3 class="sear-head editContent" >Год</h3>
+    {% get_years as years %}
+    <ul class="w3layouts-box-list">
+        {% for year in years %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked">
+                <span class="span editContent" >{{year}}</span>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
