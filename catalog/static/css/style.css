@@ -1238,6 +1238,10 @@ a.move-top span {
     background: #4a4b4c;
 }
 
+.related-obj {
+    color: black;
+}
+
 /*-- //to-top --*/
 
 @media(max-width:1366px) {

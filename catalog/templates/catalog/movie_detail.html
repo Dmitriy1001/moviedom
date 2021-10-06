@@ -16,7 +16,14 @@
                 <ul>
                     <li style="list-style: none"><span><b>Год:</b> {{movie.year}}</span></li>
                     <li style="list-style: none">
-                        <span><b>Страна:</b> {{movie.country.all|sep_by}}</span>
+                        <span>
+                            <b>Страна:</b>
+                            {% for country in movie.country.all %}
+                                <a href="{% url 'country_movies_list' country.url %}" class="related-obj">
+                                    {{country}}{% if movie.country.all.last != country %}, {% endif %}
+                                </a>
+                            {% endfor %}
+                        </span>
                     </li>
                     {% if movie.tagline %}
                         <li style="list-style: none">
@@ -24,11 +31,34 @@
                         </li>
                     {% endif %}
                     <li style="list-style: none">
-                        <span><b>Режиссер:</b> {{movie.director.all|sep_by}}</span></li>
-                    <li style="list-style: none">
-                        <span><b>Актеры:</b> {{movie.actors.all|sep_by}}</span>
+                        <span>
+                            <b>Режиссер:</b>
+                            {% for director in movie.director.all %}
+                                <a href="{% url 'director_movies_list' director.url %}" class="related-obj">
+                                    {{director}}{% if movie.director.all.last != director %}, {% endif %}
+                                </a>
+                            {% endfor %}
+                        </span>
                     </li>
-                    <li style="list-style: none"><span><b>Жанр:</b> {{movie.genre.all|sep_by}}</span>
+                    <li style="list-style: none">
+                        <span>
+                            <b>Актеры:</b>
+                            {% for actor in movie.actors.all %}
+                                <a href="{% url 'actor_movies_list' actor.url %}" class="related-obj">
+                                    {{actor}}{% if movie.actors.all.last != actor %}, {% endif %}
+                                </a>
+                            {% endfor %}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span>
+                            <b>Жанр:</b>
+                            {% for genre in movie.genre.all %}
+                                <a href="{% url 'genre_movies_list' genre.url %}" class="related-obj">
+                                    {{genre}}{% if movie.genre.all.last != genre %}, {% endif %}
+                                </a>
+                            {% endfor %}
+                        </span>
                     </li>
                     <li style="list-style: none"><span><b>Премьера в мире:</b> {{movie.world_premiere}}</span>
                     </li>
@@ -87,6 +117,7 @@
             <h3 class="shop-sing editContent" style="outline: none; cursor: inherit;">
                 О фильме {{movie}}
             </h3>
+            <br>
             {% for shot in movie.shots.all %}
                 <p>
                     <img src="{{shot.image.url}}" class="img-fluid" alt="">

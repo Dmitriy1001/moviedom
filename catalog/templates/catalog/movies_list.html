@@ -11,7 +11,15 @@
 {% block content %}
     <div class="left-ads-display col-lg-9">
         <div class="row">
-
+            {% if search_query %}
+                <h2 class="sear-head editContent">
+                    {% if movies %}
+                        Результаты поиска по запросу "{{search_query}}"
+                    {% else %}
+                        По вашему запросу ничего не найдено
+                    {% endif %}
+                </h2>
+            {% endif %}
             {% for movie in movies %}
                 <div class="col-md-4 product-men">
                     <div class="product-shoe-info editContent text-center mt-lg-4" >

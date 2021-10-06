@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.db.models import Q
 from django.views.generic import ListView, DetailView
 
-from .models import Movie, Category
+from .mixins import ModelMovieListMixin
+from .models import Movie, Category, Genre, Country, Director, Actor
 
 
 class MovieList(ListView):
@@ -13,13 +14,39 @@ class MovieList(ListView):
     extra_context = {'page': 'index'}
 
 
-class CategoryMovieList(MovieList):
+class CategoryMovieListMixin(ModelMovieListMixin, MovieList):
+    model = Category
+
+
+class GenreMovieList(ModelMovieListMixin, MovieList):
+    model = Genre
+
+
+class CountryMovieList(ModelMovieListMixin, MovieList):
+    model = Country
+
+
+class DirectorMovieList(ModelMovieListMixin, MovieList):
+    model = Director
+
+
+class ActorMovieList(ModelMovieListMixin, MovieList):
+    model = Actor
+
+
+class SearchMovieList(MovieList):
     def get_queryset(self):
-        return Movie.objects.filter(category__url=self.kwargs['category_url'])
+        try:
+            query = self.request.GET['search'].strip()
+        except KeyError:
+            query = ''
+        if query:
+            return Movie.objects.filter(Q(title__icontains=query)|Q(description__icontains=query))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = Category.objects.get(url=self.kwargs['category_url'])
+        query = self.request.GET.get('search')
+        context['search_query'] = query if query else 'Ничего не найдено'
         return context
 
 

@@ -94,13 +94,7 @@
             <div class="container-fluid py-md-3">
                 <div class="row">
                     <div class="side-bar col-lg-3">
-                        <div class="search-bar w3layouts-newsletter">
-                            <h3 class="sear-head editContent" >Поиск фильма</h3>
-                            <form action="#" method="post" class="d-flex editContent" >
-                                <input type="search" placeholder="Введите название..." name="search" class="form-control" required="">
-                                <button class="btn1 btn" ><span class="fa fa-search" aria-hidden="true" ></span></button>
-                            </form>
-                        </div>
+                        {% include 'catalog/includes/search.html' %}
                         <!--preference -->
                         {% include 'catalog/includes/genres.html' %}
                         <!-- // preference -->

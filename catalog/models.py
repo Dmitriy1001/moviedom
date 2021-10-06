@@ -25,7 +25,6 @@ class Genre(models.Model):
         verbose_name = 'жанр'
         verbose_name = 'жанры'
 
-
     def __str__(self):
         return self.name
 
@@ -44,6 +43,7 @@ class Country(models.Model):
 
 class Actor(models.Model):
     name = models.CharField(max_length=255, verbose_name='ФИО')
+    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка', null=True)
     photo = models.ImageField(upload_to='actors', blank=True, null=True, verbose_name='Фото')
     about = models.TextField(blank=True, verbose_name='Биография')
 
@@ -57,6 +57,7 @@ class Actor(models.Model):
 
 class Director(models.Model):
     name = models.CharField(max_length=255, verbose_name='ФИО')
+    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка', null=True)
     photo = models.ImageField(upload_to='directors', blank=True, null=True, verbose_name='фото')
     about = models.TextField(blank=True, verbose_name='биография')
 
@@ -72,6 +73,7 @@ class Movie(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
+        related_name='movies',
         null=True,
         verbose_name='Категория',
     )
