@@ -55,7 +55,7 @@
                                 <ul>
                                     {% for category in categories %}
                                         <li class="{% if category == title %}active{% endif %}">
-                                            <a href="{% url 'category_movies_list' category.url %}">
+                                            <a href="{% url 'filter_by_movies_list' 'category' category.url %}">
                                                 {{category}}
                                             </a>
                                         </li>

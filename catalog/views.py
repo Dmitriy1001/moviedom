@@ -1,7 +1,8 @@
 from django.db.models import Q
+from django.http import Http404
 from django.views.generic import ListView, DetailView
 
-from .mixins import ModelMovieListMixin
+
 from .models import Movie, Category, Genre, Country, Director, Actor
 
 
@@ -14,24 +15,28 @@ class MovieList(ListView):
     extra_context = {'page': 'index'}
 
 
-class CategoryMovieListMixin(ModelMovieListMixin, MovieList):
-    model = Category
+class FilterByMovieList(MovieList):
+    models = {
+        'category': Category,
+        'genre': Genre,
+        'country': Country,
+        'director': Director,
+        'actor': Actor
+    }
 
+    def get_queryset(self):
+        try:
+            model = self.models[self.kwargs['model']]
+        except KeyError:
+            raise Http404
+        model_instance = model.objects.get(url=self.kwargs['model_url'])
+        self.kwargs['title'] = model_instance.name
+        return model_instance.movies.all()
 
-class GenreMovieList(ModelMovieListMixin, MovieList):
-    model = Genre
-
-
-class CountryMovieList(ModelMovieListMixin, MovieList):
-    model = Country
-
-
-class DirectorMovieList(ModelMovieListMixin, MovieList):
-    model = Director
-
-
-class ActorMovieList(ModelMovieListMixin, MovieList):
-    model = Actor
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.kwargs['title']
+        return context
 
 
 class SearchMovieList(MovieList):

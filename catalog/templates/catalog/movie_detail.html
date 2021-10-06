@@ -19,7 +19,7 @@
                         <span>
                             <b>Страна:</b>
                             {% for country in movie.country.all %}
-                                <a href="{% url 'country_movies_list' country.url %}" class="related-obj">
+                                <a href="{% url 'filter_by_movies_list' model='country' model_url=country.url %}" class="related-obj">
                                     {{country}}{% if movie.country.all.last != country %}, {% endif %}
                                 </a>
                             {% endfor %}
@@ -34,7 +34,7 @@
                         <span>
                             <b>Режиссер:</b>
                             {% for director in movie.director.all %}
-                                <a href="{% url 'director_movies_list' director.url %}" class="related-obj">
+                                <a href="{% url 'filter_by_movies_list' 'director' director.url %}" class="related-obj">
                                     {{director}}{% if movie.director.all.last != director %}, {% endif %}
                                 </a>
                             {% endfor %}
@@ -44,7 +44,7 @@
                         <span>
                             <b>Актеры:</b>
                             {% for actor in movie.actors.all %}
-                                <a href="{% url 'actor_movies_list' actor.url %}" class="related-obj">
+                                <a href="{% url 'filter_by_movies_list' 'actor' actor.url %}" class="related-obj">
                                     {{actor}}{% if movie.actors.all.last != actor %}, {% endif %}
                                 </a>
                             {% endfor %}
@@ -54,7 +54,7 @@
                         <span>
                             <b>Жанр:</b>
                             {% for genre in movie.genre.all %}
-                                <a href="{% url 'genre_movies_list' genre.url %}" class="related-obj">
+                                <a href="{% url 'filter_by_movies_list' 'genre' genre.url %}" class="related-obj">
                                     {{genre}}{% if movie.genre.all.last != genre %}, {% endif %}
                                 </a>
                             {% endfor %}
