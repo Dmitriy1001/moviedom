@@ -1,0 +1,107 @@
+{% load catalog_tags %}
+
+<div class="search-bar w3layouts-newsletter">
+  <h3 class="sear-head editContent" >Поиск фильма</h3>
+  <form action="{% url 'search_movies_list' %}" class="d-flex editContent" enctype="multipart/form-data">
+    <input type="search" placeholder="Введите название..." name="search" class="form-control" required="">
+    <button class="btn1 btn" type="submit"><span class="fa fa-search" aria-hidden="true" ></span></button>
+  </form>
+</div>
+
+<div class="left-side my-4">
+    <h3 class="sear-head editContent" >Жанры</h3>
+    {% get_genres as genres %}
+    <ul class="w3layouts-box-list">
+        {% for genre in genres %}
+            <li class="editContent">
+                <input type="checkbox" class="checked">
+                <span class="span editContent" >{{genre}}</span>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="left-side">
+    <h3 class="sear-head editContent" >Год</h3>
+    {% get_years as years %}
+    <ul class="w3layouts-box-list">
+        {% for year in years %}
+            <li class="editContent" >
+                <input type="checkbox" class="checked">
+                <span class="span editContent" >{{year}}</span>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="customer-rev left-side my-4">
+    <h3 class="sear-head editContent" >Рейтинг</h3>
+    <ul class="w3layouts-box-list">
+        <li>
+            <a href="#">
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="editContent" >5.0</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star-o" aria-hidden="true" ></span>
+                <span class="editContent" >4.0</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star-half-o" aria-hidden="true" ></span>
+                <span class="fa fa-star-o" aria-hidden="true" ></span>
+                <span class="editContent" >3.5</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star" aria-hidden="true"></span>
+                <span class="fa fa-star-o" aria-hidden="true" ></span>
+                <span class="fa fa-star-o" aria-hidden="true" ></span>
+                <span class="editContent" >3.0</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="fa fa-star" aria-hidden="true"></span>
+                <span class="fa fa-star" aria-hidden="true" ></span>
+                <span class="fa fa-star-half-o" aria-hidden="true" ></span>
+                <span class="fa fa-star-o" aria-hidden="true" ></span>
+                <span class="fa fa-star-o" aria-hidden="true" ></span>
+                <span class="editContent" >2.5</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="deal-leftmk left-side">
+    <h3 class="sear-head editContent">Последние добавленные</h3>
+    {% get_last_movies as last_movies %}
+    {% for movie in last_movies %}
+        <div class="special-sec1 row mt-3 editContent">
+            <div class="img-deals col-md-4">
+                <img src="{{movie.poster.url}}" class="img-fluid" alt="">
+            </div>
+            <div class="img-deal1 col-md-4">
+                <h3 class="editContent">{{movie}}</h3>
+                <a href="" class="editContent"></a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
