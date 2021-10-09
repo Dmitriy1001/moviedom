@@ -100,6 +100,9 @@ class Movie(models.Model):
     def get_absolute_url(self):
         return reverse('movie_detail', kwargs={'movie_url': self.url})
 
+    def get_review(self):
+        return self.reviews.filter(parent__isnull=True)
+
     def __str__(self):
         return self.title
 
@@ -147,25 +150,35 @@ class Rating(models.Model):
 
 
 class Review(models.Model):
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм')
+    posted = models.DateTimeField(auto_now_add=True)
+    movie = models.ForeignKey(
+        Movie,
+        related_name='reviews',
+        on_delete=models.CASCADE,
+        verbose_name='Фильм'
+    )
     email = models.EmailField(blank=True, verbose_name='Почта')
     name = models.CharField(max_length=255, verbose_name='Имя')
     text = models.TextField(max_length=5000, verbose_name='Текст')
     parent = models.ForeignKey(
         'self',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
+        related_name='reviews',
         blank=True,
         null=True,
-        #verbose_name='',
+        verbose_name='Ответ на комментарий',
     )
 
     class Meta:
         verbose_name = 'отзыв'
         verbose_name_plural = 'отзывы'
+        ordering = ('-posted',)
 
     def __str__(self):
-        return f'{self.name} - {self.movie}'
-
+        return (
+                f'{self.name} про "{self.movie}" - '
+                f'{self.posted.strftime("%d %b %Yг. %H:%M")}'
+        )
 
 
 
