@@ -1,8 +1,9 @@
 from django.db.models import Q
 from django.http import Http404
+from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView
 
-
+from .forms import ReviewForm
 from .models import Movie, Category, Genre, Country, Director, Actor
 
 
@@ -11,7 +12,6 @@ class MovieList(ListView):
         Movie.objects.select_related('category')
     )
     template_name = 'catalog/movies_list.html'
-    context_object_name = 'movies'
     extra_context = {'page': 'index'}
 
 
@@ -27,9 +27,11 @@ class FilterByMovieList(MovieList):
     def get_queryset(self):
         try:
             model = self.models[self.kwargs['model']]
+            model_instance = model.objects.get(url=self.kwargs['model_url'])
         except KeyError:
             raise Http404
-        model_instance = model.objects.get(url=self.kwargs['model_url'])
+        except model.DoesNotExist:
+            raise Http404(f'{model._meta.verbose_name} не найдено')
         self.kwargs['title'] = model_instance.name
         return model_instance.movies.all()
 
@@ -56,7 +58,19 @@ class SearchMovieList(MovieList):
 
 
 class MovieDetail(DetailView):
-    template_name = 'catalog/movie_detail.html'
+    form_class = ReviewForm
 
     def get_object(self, queryset=None):
         return Movie.objects.get(url=self.kwargs['movie_url'])
+
+    def post(self, request, **kwargs):
+        movie = self.get_object()
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            new_review = form.save(commit=False)
+            if request.POST.get('parent', None):
+                new_review.parent_id = int(request.POST.get("parent"))
+            new_review.movie = movie
+            new_review.save()
+            return redirect('movie_detail', movie.url)
+        return render(request, self.template_name, {'movie': movie, 'form': form})
