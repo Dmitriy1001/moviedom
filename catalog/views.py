@@ -1,5 +1,5 @@
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView
 
@@ -8,14 +8,15 @@ from .models import Movie, Category, Genre, Country, Director, Actor
 
 
 class MovieList(ListView):
+    model = Movie
     queryset = (
-        Movie.objects.select_related('category')
+        Movie.objects.select_related('category').filter(moderation=True)
     )
     template_name = 'catalog/movies_list.html'
     extra_context = {'page': 'index'}
 
 
-class FilterByMovieList(MovieList):
+class FilterMovieList(MovieList):
     models = {
         'category': Category,
         'genre': Genre,
@@ -32,13 +33,34 @@ class FilterByMovieList(MovieList):
             raise Http404
         except model.DoesNotExist:
             raise Http404(f'{model._meta.verbose_name} не найдено')
+        self.kwargs['page'] = model
         self.kwargs['title'] = model_instance.name
         return model_instance.movies.all()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['page'] = 'category'
         context['title'] = self.kwargs['title']
         return context
+
+
+class MultipleFilterMovieList(ListView):
+
+
+    def get_queryset(self):
+        genre = self.request.GET.getlist('genre')
+        year = self.request.GET.getlist('year')
+        if genre and not year:
+            queryset = Movie.objects.filter(genre__in=genre)
+        elif not genre and year:
+            queryset = Movie.objects.filter(year__in=year)
+        elif genre and year:
+            queryset = Movie.objects.filter(year__in=year, genre__in=genre)
+        return queryset.distinct().values('title', 'tagline', 'url', 'poster')
+
+    def get(self, request, *args, **kwargs):
+        queryset = list(self.get_queryset())
+        return JsonResponse({'movies': queryset}, safe=False)
 
 
 class SearchMovieList(MovieList):
@@ -53,7 +75,9 @@ class SearchMovieList(MovieList):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('search')
+        context['page'] = 'search'
         context['search_query'] = query if query else 'Ничего не найдено'
+        context['title'] = f'Поиск  "{query}"'
         return context
 
 
@@ -74,3 +98,12 @@ class MovieDetail(DetailView):
             new_review.save()
             return redirect('movie_detail', movie.url)
         return render(request, self.template_name, {'movie': movie, 'form': form})
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page'] = 'category'
+        context['title'] = self.get_object().category.name
+        context['movie_detail'] = True
+        return context
+
+
