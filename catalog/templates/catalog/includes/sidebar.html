@@ -8,31 +8,37 @@
   </form>
 </div>
 
-<div class="left-side my-4">
-    <h3 class="sear-head editContent" >Жанры</h3>
-    {% get_genres as genres %}
-    <ul class="w3layouts-box-list">
-        {% for genre in genres %}
-            <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent" >{{genre}}</span>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+<form action="{% url 'multiple_filter_movies_list' %}" name="filter">
+    <div class="left-side my-4">
+        <h3 class="sear-head editContent" >Жанры</h3>
+        {% get_genres as genres %}
+        <ul class="w3layouts-box-list">
+            {% for genre in genres %}
+                <li class="editContent">
+                    <input type="checkbox" class="checked" name="genre" value="{{genre.id}}">
+                    <span class="span editContent" >{{genre}}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
-<div class="left-side">
-    <h3 class="sear-head editContent" >Год</h3>
-    {% get_years as years %}
-    <ul class="w3layouts-box-list">
-        {% for year in years %}
-            <li class="editContent" >
-                <input type="checkbox" class="checked">
-                <span class="span editContent" >{{year}}</span>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+    <div class="left-side">
+        <h3 class="sear-head editContent" >Год</h3>
+        {% get_years as years %}
+        <ul class="w3layouts-box-list">
+            {% for year in years %}
+                <li class="editContent" >
+                    <input type="checkbox" class="checked" name="year" value="{{year.year}}">
+                    <span class="span editContent" >{{year.year}}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button type="submit" class="btn btn-success">Найти</button>
+</form>
+<a href="" style="font-size:10pt; color:grey;">
+    Сбросить
+</a>
 
 <div class="customer-rev left-side my-4">
     <h3 class="sear-head editContent" >Рейтинг</h3>
@@ -104,4 +110,5 @@
             </div>
         </div>
     {% endfor %}
+    <hr>
 </div>

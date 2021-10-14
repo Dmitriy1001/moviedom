@@ -126,18 +126,19 @@ class MovieShot(models.Model):
 
 
 class RatingStar(models.Model):
-    value = models.PositiveSmallIntegerField(default=0, verbose_name='Значение')
+    value = models.PositiveSmallIntegerField(default=0, unique=True, verbose_name='Значение')
 
     class Meta:
         verbose_name = 'звезду рейтинга'
         verbose_name_plural = 'здезды рейтинга'
+        ordering = ('-value',)
 
     def __str__(self):
-        return self.value
+        return str(self.value)
 
 
 class Rating(models.Model):
-    ip = models.CharField(max_length=15, verbose_name='IP адресс')
+    ip = models.CharField(max_length=15, verbose_name='IP адрес')
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Звезда')
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм')
 

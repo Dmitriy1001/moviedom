@@ -1,10 +1,11 @@
 from django.db.models import Q
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
+from django.views import View
 from django.views.generic import ListView, DetailView
 
-from .forms import ReviewForm
-from .models import Movie, Category, Genre, Country, Director, Actor
+from .forms import ReviewForm, RatingForm
+from .models import Movie, Category, Genre, Country, Director, Actor, Rating
 
 
 class MovieList(ListView):
@@ -12,6 +13,7 @@ class MovieList(ListView):
     queryset = (
         Movie.objects.select_related('category').filter(moderation=True)
     )
+    #paginate_by = 3
     template_name = 'catalog/movies_list.html'
     extra_context = {'page': 'index'}
 
@@ -45,8 +47,6 @@ class FilterMovieList(MovieList):
 
 
 class MultipleFilterMovieList(ListView):
-
-
     def get_queryset(self):
         genre = self.request.GET.getlist('genre')
         year = self.request.GET.getlist('year')
@@ -104,6 +104,29 @@ class MovieDetail(DetailView):
         context['page'] = 'category'
         context['title'] = self.get_object().category.name
         context['movie_detail'] = True
+        context['star_form'] = RatingForm()
         return context
+
+
+class AddStarRating(View):
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+
+    def post(self, request):
+        form = RatingForm(request.POST)
+        if form.is_valid():
+            Rating.objects.update_or_create(
+                ip=self.get_client_ip(request),
+                movie_id=int(request.POST.get("movie")),
+                defaults={'star_id': int(request.POST.get("star"))}
+            )
+            return HttpResponse(status=201)
+        else:
+            return HttpResponse(status=400)
 
 

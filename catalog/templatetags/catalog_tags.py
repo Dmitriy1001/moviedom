@@ -16,11 +16,11 @@ def get_genres():
 
 @register.simple_tag()
 def get_years():
-    return sorted(set((movie.year for movie in Movie.objects.all())), reverse=True)
+    return Movie.objects.values('year').distinct().order_by('-year')
 
 
 @register.simple_tag()
 def get_last_movies():
-    return Movie.objects.all()[:5]
+    return Movie.objects.order_by('-id')[:5]
 
 

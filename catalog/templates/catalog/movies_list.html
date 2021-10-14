@@ -11,15 +11,15 @@
 {% block content %}
     <div class="left-ads-display col-lg-9">
         <div class="row">
-            {% if search_query %}
-                <h2 class="sear-head editContent">
-                    {% if movies %}
-                        Результаты поиска по запросу "{{search_query}}"
-                    {% else %}
-                        По вашему запросу ничего не найдено
-                    {% endif %}
-                </h2>
-            {% endif %}
+<!--            {% if search_query %}-->
+<!--                <h2 class="sear-head editContent">-->
+<!--                    {% if movie_list %}-->
+<!--                        Результаты поиска по запросу "{{search_query}}"-->
+<!--                    {% else %}-->
+<!--                        По вашему запросу ничего не найдено-->
+<!--                    {% endif %}-->
+<!--                </h2>-->
+<!--            {% endif %}-->
 
             {% for movie in movie_list %}
                 <div class="col-md-4 product-men">
@@ -49,7 +49,7 @@
                     </div>
                 </div>
             {% endfor %}
-
         </div>
     </div>
+
 {% endblock %}

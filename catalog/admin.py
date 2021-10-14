@@ -130,7 +130,7 @@ class RatingStarAdmin(admin.ModelAdmin):
 
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('star', 'movie', 'ip')
 
 
 @admin.register(Review)

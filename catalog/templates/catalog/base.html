@@ -33,7 +33,9 @@
             <!--/banner-->
             <div class="banner-info">
                 <h3 class="mb-4 editContent">
-                    {% if page == 'index' %}Все о кино{% endif %}
+                    {% if page == 'index' or page == 'category' or page == 'search' %}
+                        Все о кино
+                    {% endif %}
                 </h3>
                 <div class="ban-buttons"></div>
             </div>
@@ -52,9 +54,11 @@
         <section class="ab-info-main py-md-5 py-4 editContent" style="padding-left: 3rem; padding-right: 3rem;">
             <div class="container-fluid py-md-3">
                 <div class="row">
-                    <div class="side-bar col-lg-{% if page == 'index' %}3{% else %}4{% endif %}">
-                        {% include 'catalog/includes/sidebar.html' %}
-                    </div>
+                    {% if not movie_detail %}
+                        <div class="side-bar col-lg">
+                            {% include 'catalog/includes/sidebar.html' %}
+                        </div>
+                    {% endif %}
                     {% block content %}{% endblock %}
                 </div>
             </div>
@@ -70,11 +74,14 @@
                         <a href="https://djangochannel.com"> DJANGO SCHOOL.</a>
                     </p>
                     <!-- move top icon -->
-                    <a href="" class="move-top text-right col-md-2"><span class="fa fa-long-arrow-up" aria-hidden="true" ></span></a>
+                    <a href="" class="move-top text-right col-md-2"><span class="fa fa-long-arrow-up" aria-hidden="true"></span></a>
                     <!-- //move top icon -->
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src='https://twitter.github.io/hogan.js/builds/3.0.1/hogan-3.0.1.js'></script>
 </body>
 </html>
