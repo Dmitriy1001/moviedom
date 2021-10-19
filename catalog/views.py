@@ -13,12 +13,13 @@ class MovieList(ListView):
     queryset = (
         Movie.objects.select_related('category').filter(moderation=True)
     )
-    #paginate_by = 3
+    paginate_by = 3
     template_name = 'catalog/movies_list.html'
     extra_context = {'page': 'index'}
 
 
 class FilterMovieList(MovieList):
+    paginate_by = 1
     models = {
         'category': Category,
         'genre': Genre,
@@ -35,12 +36,11 @@ class FilterMovieList(MovieList):
             raise Http404
         except model.DoesNotExist:
             raise Http404(f'{model._meta.verbose_name} не найдено')
-        self.kwargs['page'] = model
         self.kwargs['title'] = model_instance.name
         return model_instance.movies.all()
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         context['page'] = 'category'
         context['title'] = self.kwargs['title']
         return context
@@ -64,6 +64,8 @@ class MultipleFilterMovieList(ListView):
 
 
 class SearchMovieList(MovieList):
+    paginate_by = 3
+
     def get_queryset(self):
         try:
             query = self.request.GET['search'].strip()
@@ -77,7 +79,9 @@ class SearchMovieList(MovieList):
         query = self.request.GET.get('search')
         context['page'] = 'search'
         context['search_query'] = query if query else 'Ничего не найдено'
-        context['title'] = f'Поиск  "{query}"'
+        context['title'] = f'Поиск "{query}"'
+        print(dir(self.request))
+        print(query)
         return context
 
 
