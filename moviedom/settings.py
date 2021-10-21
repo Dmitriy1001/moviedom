@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'snowpenguin.django.recaptcha3',
     'catalog.apps.CatalogConfig',
+    'contact.apps.ContactConfig',
 ]
 
 MIDDLEWARE = [

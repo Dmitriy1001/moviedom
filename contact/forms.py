@@ -1,0 +1,18 @@
+from django import forms
+from django.core.exceptions import ValidationError
+
+from snowpenguin.django.recaptcha3.fields import ReCaptchaField
+
+from .models import Contact
+
+
+class ContactForm(forms.ModelForm):
+    captcha = ReCaptchaField()
+
+    class Meta:
+        model = Contact
+        fields = ('email', 'captcha')
+        widgets = {
+            'email': forms.TextInput(attrs={'class': 'editContent', 'placeholder': 'email'})
+        }
+        labels = {'email': ''}
