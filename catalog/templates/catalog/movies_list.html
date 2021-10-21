@@ -52,11 +52,7 @@
         </div>
         <br>
         <div class="d-flex justify-content-center">
-            {% if page != 'search' %}
-                {% include 'catalog/includes/pagination.html' %}
-            {% else %}
-                {% include 'catalog/includes/search_pagination.html' %}
-            {% endif %}
+            {% include 'catalog/includes/pagination.html' %}
         </div>
     </div>
 {% endblock %}

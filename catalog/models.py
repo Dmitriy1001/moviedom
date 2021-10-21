@@ -81,7 +81,6 @@ class Movie(models.Model):
     url = models.SlugField(max_length=255, unique=True, verbose_name='Ссылка')
     tagline = models.CharField(max_length=255, blank=True, verbose_name='Слоган')
     description = models.TextField(verbose_name='Описание')
-    trailer_url = models.URLField(blank=True, verbose_name='Ссылка на трейлер')
     poster = models.ImageField(upload_to='movies', verbose_name='Постер')
     year = models.PositiveSmallIntegerField(default=timezone.now().year, verbose_name='Год')
     country = models.ManyToManyField(Country, related_name='movies', verbose_name='Страна')

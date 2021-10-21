@@ -8,7 +8,7 @@
   </form>
 </div>
 
-<form action="{% url 'multiple_filter_movies_list' %}" name="filter">
+<form action="{% url 'multiple_filter_movies_list' %}">
     <div class="left-side my-4">
         <h3 class="sear-head editContent" >Жанры</h3>
         {% get_genres as genres %}
@@ -16,14 +16,14 @@
             {% for genre in genres %}
                 <li class="editContent">
                     <input type="checkbox" class="checked" name="genre" value="{{genre.id}}">
-                    <span class="span editContent" >{{genre}}</span>
+                    <span class="span editContent">{{genre}}</span>
                 </li>
             {% endfor %}
         </ul>
     </div>
 
     <div class="left-side">
-        <h3 class="sear-head editContent" >Год</h3>
+        <h3 class="sear-head editContent">Год</h3>
         {% get_years as years %}
         <ul class="w3layouts-box-list">
             {% for year in years %}
@@ -36,7 +36,7 @@
     </div>
     <button type="submit" class="btn btn-success">Найти</button>
 </form>
-<a href="" style="font-size:10pt; color:grey;">
+<a href="{% url 'index' %}" style="font-size:10pt; color:grey;">
     Сбросить
 </a>
 
@@ -102,13 +102,17 @@
     {% for movie in last_movies %}
         <div class="special-sec1 row mt-3 editContent">
             <div class="img-deals col-md-4">
-                <img src="{{movie.poster.url}}" class="img-fluid" alt="">
+                <a href="{{movie.get_absolute_url}}">
+                    <img src="{{movie.poster.url}}" class="img-fluid" alt="">
+                </a>
             </div>
             <div class="img-deal1 col-md-4">
-                <h3 class="editContent">{{movie}}</h3>
-                <a href="" class="editContent"></a>
+                <a href="{{movie.get_absolute_url}}">
+                    <h3 class="editContent">{{movie}}</h3>
+                </a>
             </div>
         </div>
     {% endfor %}
     <hr>
 </div>
+

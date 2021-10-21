@@ -1,3 +1,6 @@
+import re
+
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
@@ -15,11 +18,11 @@ class MovieList(ListView):
     )
     paginate_by = 3
     template_name = 'catalog/movies_list.html'
-    extra_context = {'page': 'index'}
+    extra_context = {'page': 'index', 'params': '?page', 'index_page': True}
 
 
 class FilterMovieList(MovieList):
-    paginate_by = 1
+    paginate_by = 3
     models = {
         'category': Category,
         'genre': Genre,
@@ -43,10 +46,13 @@ class FilterMovieList(MovieList):
         context = super().get_context_data(*args, **kwargs)
         context['page'] = 'category'
         context['title'] = self.kwargs['title']
+        context['params'] = '?page'
         return context
 
 
-class MultipleFilterMovieList(ListView):
+class MultipleFilterMovieList(MovieList):
+    paginate_by = 3
+
     def get_queryset(self):
         genre = self.request.GET.getlist('genre')
         year = self.request.GET.getlist('year')
@@ -56,11 +62,13 @@ class MultipleFilterMovieList(ListView):
             queryset = Movie.objects.filter(year__in=year)
         elif genre and year:
             queryset = Movie.objects.filter(year__in=year, genre__in=genre)
-        return queryset.distinct().values('title', 'tagline', 'url', 'poster')
+        return queryset.distinct()
 
-    def get(self, request, *args, **kwargs):
-        queryset = list(self.get_queryset())
-        return JsonResponse({'movies': queryset}, safe=False)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        params = re.search(r'/multiple_filter/(.+)', self.request.get_full_path())
+        context['params'] = params.group(1) + '&page'
+        return context
 
 
 class SearchMovieList(MovieList):
@@ -80,8 +88,7 @@ class SearchMovieList(MovieList):
         context['page'] = 'search'
         context['search_query'] = query if query else 'Ничего не найдено'
         context['title'] = f'Поиск "{query}"'
-        print(dir(self.request))
-        print(query)
+        context['params'] = f'?search={query}&page'
         return context
 
 
@@ -107,8 +114,9 @@ class MovieDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['page'] = 'category'
         context['title'] = self.get_object().category.name
-        context['movie_detail'] = True
+        #context['movie_detail'] = True
         context['star_form'] = RatingForm()
+        context['form'] = ReviewForm()
         return context
 
 

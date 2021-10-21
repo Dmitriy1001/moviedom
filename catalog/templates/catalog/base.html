@@ -1,5 +1,6 @@
 {% load static %}
 {% load catalog_tags %}
+{% load recaptcha3 %}
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -22,6 +23,8 @@
     <link href="//fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700" rel="stylesheet">
     <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900" rel="stylesheet">
     <!-- //Fonts -->
+    {% recaptcha_init %}
+    {% recaptcha_ready action_name='homepage' %}
 </head>
 
 <body>
@@ -54,7 +57,7 @@
         <section class="ab-info-main py-md-5 py-4 editContent" style="padding-left: 3rem; padding-right: 3rem;">
             <div class="container-fluid py-md-3">
                 <div class="row">
-                    {% if not movie_detail %}
+                    {% if index_page %}
                         <div class="side-bar col-lg">
                             {% include 'catalog/includes/sidebar.html' %}
                         </div>
