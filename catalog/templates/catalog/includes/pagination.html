@@ -1,14 +1,19 @@
-{% load catalog_filters %}
+{% load catalog_filters i18n %}
 
 {% if page_obj.has_other_pages %}
+  {% get_current_language as LANGUAGE_CODE %}
   <nav aria-label="">
     <ul class="pagination">
       {% if page_obj.number|add:-1 > 3 %}
-        <li class="page-item"><a class="page-link" href="{{params}}=1">первая</a></li>
+        <li class="page-item">
+          <a class="page-link" href="{{params}}=1">
+            {% if LANGUAGE_CODE == 'ru' %}первая{% elif LANGUAGE_CODE == 'en' %}first{% endif %}
+          </a>
+        </li>
       {% endif %}
       <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
         <a class="page-link" href="{% if page_obj.has_previous %}{{params}}{{page_obj.previous_page_number}}{% endif %}">
-          назад
+          {% if LANGUAGE_CODE == 'ru' %}назад{% elif LANGUAGE_CODE == 'en' %}back{% endif %}
         </a>
       </li>
 
@@ -26,11 +31,15 @@
 
       <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
         <a class="page-link" href="{% if page_obj.has_next %}{{params}}={{page_obj.next_page_number}}{% endif %}">
-          вперед
+          {% if LANGUAGE_CODE == 'ru' %}вперед{% elif LANGUAGE_CODE == 'en' %}forward{% endif %}
         </a>
       </li>
       {% if paginator.num_pages|change_number_sign|add:page_obj.number|change_number_sign > 3 %}
-        <li class="page-item"><a class="page-link" href="{{params}}={{paginator.num_pages}}">последняя</a></li>
+        <li class="page-item">
+          <a class="page-link" href="{{params}}={{paginator.num_pages}}">
+            {% if LANGUAGE_CODE == 'ru' %}последняя{% elif LANGUAGE_CODE == 'en' %}last{% endif %}
+          </a>
+        </li>
       {% endif %}
     </ul>
   </nav>

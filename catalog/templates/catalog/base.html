@@ -1,9 +1,9 @@
-{% load static %}
+{% load static i18n %}
 {% load catalog_tags %}
 {% load recaptcha3 %}
 
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <!-- //Meta tag Keywords -->
     <title>{% block title %}MovieDom - портал о кино {% endblock %}</title>
@@ -37,7 +37,7 @@
             <div class="banner-info">
                 <h3 class="mb-4 editContent">
                     {% if page == 'index' or page == 'category' or page == 'search' %}
-                        Все о кино
+                        {% trans 'Все о кино' %}
                     {% endif %}
                 </h3>
                 <div class="ban-buttons"></div>

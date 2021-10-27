@@ -3,12 +3,14 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 
 from .models import Category, Genre, Movie, MovieShot, Actor, Director, Country, RatingStar, Rating, Review
+from modeltranslation.admin import TranslationAdmin
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
 class MovieAdminForm(forms.ModelForm):
-    description = forms.CharField(label='Описание', widget=CKEditorUploadingWidget())
+    description_ru = forms.CharField(label='Описание', widget=CKEditorUploadingWidget())
+    description_en = forms.CharField(label='Описание', widget=CKEditorUploadingWidget())
 
     class Meta:
         model = Movie
@@ -16,22 +18,22 @@ class MovieAdminForm(forms.ModelForm):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(TranslationAdmin):
     list_display = ('name', 'url')
 
 
 @admin.register(Genre)
-class GenreAdmin(admin.ModelAdmin):
+class GenreAdmin(TranslationAdmin):
     pass
 
 
 @admin.register(Country)
-class CountryAdmin(admin.ModelAdmin):
-    pass
+class CountryAdmin(TranslationAdmin):
+    list_display = ('id',)
 
 
 @admin.register(Actor)
-class ActorAdmin(admin.ModelAdmin):
+class ActorAdmin(TranslationAdmin):
     list_display = ('name', 'get_photo')
 
     @admin.display(description='Фото')
@@ -40,8 +42,12 @@ class ActorAdmin(admin.ModelAdmin):
 
 
 @admin.register(Director)
-class DirectorAdmin(admin.ModelAdmin):
-    pass
+class DirectorAdmin(TranslationAdmin):
+    list_display = ('name', 'get_photo')
+
+    @admin.display(description='Фото')
+    def get_photo(self, director):
+        return mark_safe(f'<img src={director.photo.url} width="70" height="80">')
 
 
 class ReviewInline(admin.TabularInline):
@@ -60,7 +66,7 @@ class MovieShotInline(admin.TabularInline):
 
 
 @admin.register(Movie)
-class MovieAdmin(admin.ModelAdmin):
+class MovieAdmin(TranslationAdmin):
     list_display = (
         'title',
         'category',

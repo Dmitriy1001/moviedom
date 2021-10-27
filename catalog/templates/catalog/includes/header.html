@@ -1,4 +1,4 @@
-{% load catalog_tags %}
+{% load i18n catalog_tags %}
 
 <header class="header">
     <div class="container-fluid px-lg-5">
@@ -15,12 +15,16 @@
             <input type="checkbox" id="drop">
 
             <ul class="menu mt-2">
-                <li class="{% if page == 'index' %}active{% endif %}"><a href="{% url 'index' %}">Главная</a></li>
+                <li class="{% if page == 'index' %}active{% endif %}">
+                    <a href="{% url 'index' %}">{% trans 'Главная' %}</a>
+                </li>
                 <li>
                     <!-- First Tier Drop Down -->
-                    <label for="drop-2" class="toggle">Категории<span class="fa fa-angle-down" aria-hidden="true"></span></label>
-                    <a href="#" style="{% if page == 'category' %}color:#ff4c4c;{% endif %}">
+                    <label for="drop-2" class="toggle">
                         Категории<span class="fa fa-angle-down" aria-hidden="true"></span>
+                    </label>
+                    <a href="#" style="{% if page == 'category' %}color:#ff4c4c;{% endif %}">
+                        {% trans 'Категории' %}<span class="fa fa-angle-down" aria-hidden="true"></span>
                     </a>
                     <input type="checkbox" id="drop-2">
                     {% get_categories as categories %}
@@ -34,7 +38,50 @@
                         {% endfor %}
                     </ul>
                 </li>
-                <li><a href="" style="color: rgb(255, 255, 255); font-weight: 700; text-transform: uppercase;">Вход</a></li>
+
+                {% if user.is_authenticated %}
+                    <li class="">
+                        <a href="" style="color: rgb(255, 255, 255); font-weight: 700; text-transform: uppercase;">
+                            {% trans 'Профиль' %}
+                        </a>
+                    </li>
+                    <li class="{% if '/accounts/logout/' in request.path %}active{% endif %}">
+                        <a href="{% url 'account_logout' %}" style="color: rgb(255, 255, 255); font-weight: 700; text-transform: uppercase;">
+                            {% trans 'Выход' %}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="{% if '/accounts/login/' in request.path %}active{% endif %}">
+                        <a href="{% url 'account_login' %}" style="color: rgb(255, 255, 255); font-weight: 700; text-transform: uppercase;">
+                            {% trans 'Вход' %}
+                        </a>
+                    </li>
+                    <li class="{% if '/accounts/signup/' in request.path %}active{% endif %}">
+                        <a href="{% url 'account_signup' %}" style="color: rgb(255, 255, 255); font-weight: 700; text-transform: uppercase;">
+                            {% trans 'Регистрация' %}
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ redirect_to }}">
+                        <select name="language">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            {% for language in languages %}
+                                <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
+                                        selected{% endif %}>
+                                    {{ language.name_local }} ({{ language.code }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input type="submit" value="{% if LANGUAGE_CODE == 'en' %}Go{% else %}Выбрать{% endif %}">
+                    </form>
+                </li>
+
             </ul>
 
         </nav>
