@@ -1,0 +1,32 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load account %}
+
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block content %}
+
+    <div class="col-lg-10 ml-5" align="center">
+        <h1>{% trans "Войти" %}</h1>
+        <br>
+        <p>
+            {% trans 'Если вы еще не создали аккаунт, пожалуйста' %}
+            <a href="{{ signup_url }}">{% trans 'зарегистрируйтесь' %}</a>
+        </p>
+        <form class="login" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {{field.label}}
+                    {{field}}
+                </div>
+            {% endfor %}
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+            {% endif %}
+            <button class="primaryAction" type="submit">{% trans "Войти" %}</button>
+        </form>
+    </div>
+
+{% endblock %}
