@@ -2,15 +2,15 @@ from django import forms
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Category, Genre, Movie, MovieShot, Actor, Director, Country, RatingStar, Rating, Review
+from .models import Category, Genre, Movie, Actor, Director, Country, RatingStar, Rating, Review
 from modeltranslation.admin import TranslationAdmin
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
 class MovieAdminForm(forms.ModelForm):
-    description_ru = forms.CharField(label='Описание', widget=CKEditorUploadingWidget())
-    description_en = forms.CharField(label='Описание', widget=CKEditorUploadingWidget())
+    description_ru = forms.CharField(label='Описание [ru]', widget=CKEditorUploadingWidget())
+    description_en = forms.CharField(label='Описание [en]', widget=CKEditorUploadingWidget())
 
     class Meta:
         model = Movie
@@ -29,7 +29,7 @@ class GenreAdmin(TranslationAdmin):
 
 @admin.register(Country)
 class CountryAdmin(TranslationAdmin):
-    list_display = ('id',)
+    list_display = ('name',)
 
 
 @admin.register(Actor)
@@ -53,16 +53,7 @@ class DirectorAdmin(TranslationAdmin):
 class ReviewInline(admin.TabularInline):
     model = Review
     extra = 1
-    readonly_fields = ('name', 'email')
-
-
-class MovieShotInline(admin.TabularInline):
-    model = MovieShot
-    extra = 1
-    readonly_fields = ('get_image',)
-
-    def get_image(self, movie_shot):
-        return mark_safe(f'<img src={movie_shot.image.url} width="120" height="120">')
+    readonly_fields = ('parent', 'name', 'email')
 
 
 @admin.register(Movie)
@@ -80,7 +71,7 @@ class MovieAdmin(TranslationAdmin):
     list_filter = ('category', 'year')
     search_fields = ('title', 'description')
     prepopulated_fields = {'url': ('title',)}
-    inlines = (MovieShotInline, ReviewInline)
+    inlines = (ReviewInline,)
     save_on_top = True
     list_editable = ('moderation',)
     form = MovieAdminForm
@@ -120,15 +111,6 @@ class MovieAdmin(TranslationAdmin):
     countries.short_description = 'Страна'
 
 
-@admin.register(MovieShot)
-class MovieShotAdmin(admin.ModelAdmin):
-    list_display = ('title', 'get_image')
-
-    @admin.display(description='Кадр')
-    def get_image(self, movie_shot):
-        return mark_safe(f'<img src={movie_shot.image.url} width="120" height="120">')
-
-
 @admin.register(RatingStar)
 class RatingStarAdmin(admin.ModelAdmin):
     pass
@@ -142,7 +124,7 @@ class RatingAdmin(admin.ModelAdmin):
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_filter = ('movie', 'posted')
-    readonly_fields = ('name', 'email')
+    readonly_fields = ('parent', 'name', 'email')
 
 
 admin.site.site_title = 'MovieDom'

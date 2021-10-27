@@ -1,8 +1,7 @@
 import re
 
-from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import Http404, JsonResponse, HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import ListView, DetailView
@@ -16,13 +15,12 @@ class MovieList(ListView):
     queryset = (
         Movie.objects.select_related('category').filter(moderation=True)
     )
-    paginate_by = 3
+    paginate_by = 9
     template_name = 'catalog/movies_list.html'
     extra_context = {'page': 'index', 'params': '?page', 'index_page': True}
 
 
 class FilterMovieList(MovieList):
-    paginate_by = 3
     models = {
         'category': Category,
         'genre': Genre,
@@ -51,8 +49,6 @@ class FilterMovieList(MovieList):
 
 
 class MultipleFilterMovieList(MovieList):
-    paginate_by = 3
-
     def get_queryset(self):
         genre = self.request.GET.getlist('genre')
         year = self.request.GET.getlist('year')
@@ -72,8 +68,6 @@ class MultipleFilterMovieList(MovieList):
 
 
 class SearchMovieList(MovieList):
-    paginate_by = 3
-
     def get_queryset(self):
         try:
             query = self.request.GET['search'].strip()
@@ -114,7 +108,6 @@ class MovieDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['page'] = 'category'
         context['title'] = self.get_object().category.name
-        #context['movie_detail'] = True
         context['star_form'] = RatingForm()
         context['form'] = ReviewForm()
         return context

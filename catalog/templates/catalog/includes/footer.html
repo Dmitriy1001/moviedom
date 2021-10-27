@@ -54,13 +54,10 @@
             <h3 class="footer-title text-uppercase editContent mb-lg-4 mb-3" >{% trans 'Разделы' %}</h3>
             <ul class="list-unstyled w3layouts-icons">
               <li>
-                <a href="" class="editContent">{% trans 'Главная' %}</a>
+                <a href="{% url 'index' %}" class="editContent">{% trans 'Главная' %}</a>
               </li>
               <li>
-                <a href="" class="editContent">{% trans 'Категории' %}</a>
-              </li>
-              <li>
-                <a href="" class="editContent">{% trans 'Контакты' %}</a>
+                <a href="/about/" class="editContent">{% trans 'О нас' %}</a>
               </li>
             </ul>
           </div>

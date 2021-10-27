@@ -6,7 +6,12 @@
 <html lang="en">
 <head>
     <!-- //Meta tag Keywords -->
-    <title>{% block title %}MovieDom - портал о кино {% endblock %}</title>
+    {% get_current_language as LANGUAGE_CODE %}
+    <title>
+        {% block title %}
+            MovieDom - {% if LANGUAGE_CODE == 'ru' %}портал о кино{% else %}portal about cinema{% endif %}
+        {% endblock %}
+    </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- //Meta tag Keywords -->

@@ -23,7 +23,7 @@ class Genre(models.Model):
 
     class Meta:
         verbose_name = 'жанр'
-        verbose_name = 'жанры'
+        verbose_name_plural = 'жанры'
 
     def __str__(self):
         return self.name
@@ -35,7 +35,26 @@ class Country(models.Model):
 
     class Meta:
         verbose_name = 'страну'
-        verbose_name = 'страны'
+        verbose_name_plural = 'страны'
+
+    def __str__(self):
+        return self.name
+
+
+class Director(models.Model):
+    name = models.CharField(max_length=255, verbose_name='ФИО')
+    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка', null=True)
+    photo = models.ImageField(upload_to='directors', blank=True, null=True, verbose_name='фото')
+    about = models.TextField(blank=True, verbose_name='биография')
+
+    class Meta:
+        verbose_name = 'режиссера'
+        verbose_name_plural = 'режиссеры'
+
+    def save(self, *args, **kwargs):
+        if not self.photo:
+            self.photo = 'none_avatar.png'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -51,19 +70,10 @@ class Actor(models.Model):
         verbose_name = 'актера'
         verbose_name_plural = 'актеры'
 
-    def __str__(self):
-        return self.name
-
-
-class Director(models.Model):
-    name = models.CharField(max_length=255, verbose_name='ФИО')
-    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка', null=True)
-    photo = models.ImageField(upload_to='directors', blank=True, null=True, verbose_name='фото')
-    about = models.TextField(blank=True, verbose_name='биография')
-
-    class Meta:
-        verbose_name = 'режиссера'
-        verbose_name_plural = 'режиссеры'
+    def save(self, *args, **kwargs):
+        if not self.photo:
+            self.photo = 'none_avatar.png'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -101,24 +111,6 @@ class Movie(models.Model):
 
     def get_review(self):
         return self.reviews.filter(parent__isnull=True)
-
-    def __str__(self):
-        return self.title
-
-
-class MovieShot(models.Model):
-    title = models.CharField(max_length=255, verbose_name='Заголовок')
-    movie = models.ForeignKey(
-        Movie, on_delete=models.CASCADE,
-        related_name='shots',
-        verbose_name='Фильм'
-    )
-    description = models.TextField(blank=True, verbose_name='Описание')
-    image = models.ImageField(upload_to='movie_shots', verbose_name='Изображение')
-
-    class Meta:
-        verbose_name = 'кадр из фильма'
-        verbose_name_plural = 'кадры из фильма'
 
     def __str__(self):
         return self.title
