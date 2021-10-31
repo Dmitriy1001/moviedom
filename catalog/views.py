@@ -12,12 +12,22 @@ from .models import Movie, Category, Genre, Country, Director, Actor, Rating
 
 class MovieList(ListView):
     model = Movie
-    queryset = (
-        Movie.objects.select_related('category').filter(moderation=True)
-    )
     paginate_by = 9
     template_name = 'catalog/movies_list.html'
     extra_context = {'page': 'index', 'params': '?page', 'index_page': True}
+
+    def add_average_rating(self, queryset):
+        for movie in queryset:
+            rating_list = [rating.star.value for rating in movie.rating.all()]
+            try:
+                movie.rating_av = round(sum(rating_list) / len(rating_list))
+            except ZeroDivisionError:
+                movie.rating_av = 0
+        return queryset
+
+    def get_queryset(self):
+        movies = Movie.objects.prefetch_related('rating')
+        return self.add_average_rating(movies)
 
 
 class FilterMovieList(MovieList):
@@ -38,7 +48,8 @@ class FilterMovieList(MovieList):
         except model.DoesNotExist:
             raise Http404(f'{model._meta.verbose_name} не найдено')
         self.kwargs['title'] = model_instance.name
-        return model_instance.movies.all()
+        movies = model_instance.movies.all()
+        return self.add_average_rating(movies)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -58,7 +69,8 @@ class MultipleFilterMovieList(MovieList):
             queryset = Movie.objects.filter(year__in=year)
         elif genre and year:
             queryset = Movie.objects.filter(year__in=year, genre__in=genre)
-        return queryset.distinct()
+        movies = queryset.distinct()
+        return self.add_average_rating(movies)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,15 +85,15 @@ class SearchMovieList(MovieList):
             query = self.request.GET['search'].strip()
         except KeyError:
             query = ''
-        if query:
-            return Movie.objects.filter(Q(title__icontains=query)|Q(description__icontains=query))
+        movies = Movie.objects.filter(Q(title__icontains=query)|Q(description__icontains=query))
+        return self.add_average_rating(movies)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('search')
         context['page'] = 'search'
         context['search_query'] = query if query else 'Ничего не найдено'
-        context['title'] = f'Поиск "{query}"'
+        context['title'] = f'{query}'
         context['params'] = f'?search={query}&page'
         return context
 
@@ -116,10 +128,12 @@ class MovieDetail(DetailView):
 class AddStarRating(View):
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        print(request.META)
         if x_forwarded_for:
             ip = x_forwarded_for.split(',')[0]
         else:
             ip = request.META.get('REMOTE_ADDR')
+        print(ip)
         return ip
 
     def post(self, request):

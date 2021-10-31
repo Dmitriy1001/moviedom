@@ -6,7 +6,6 @@
 {% block title %}{{movie}} | {{block.super}}{% endblock %}
 
 {% block content %}
-
     <div class="left-ads-display col-lg-10 ml-5">
         <div class="row">
             <div class="" width="100px">
@@ -83,6 +82,7 @@
                             <span><span style="font-weight:700;">{% trans 'Сборы в прокате' %}:</span> ${{movie.fees|intcomma}}</span>
                         </li>
                     {% endif %}
+
                     <li style="list-style: none">
                         <form action="{% url 'add_rating' %}" method="post" name="rating">
                             <span style="font-weight:700;">{% trans 'Рейтинг' %}</span>
@@ -94,7 +94,7 @@
                                     <label for="rating{{ v }}">{{ k }}</label>
                                 {% endfor %}
                             </span>
-                            <span class="editContent">5.0</span>
+                            <span class="editContent"></span>
                         </form>
                     </li>
                 </ul>

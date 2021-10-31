@@ -10,5 +10,10 @@ def sep_by(queryset, separator=', '):
 
 
 @register.filter
-def change_number_sign(number:(int, float)):
+def change_number_sign(number: (int, float)):
     return -number if number > 0 else abs(number)
+
+
+@register.filter
+def make_range(number: int):
+    return range(number)

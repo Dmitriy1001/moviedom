@@ -44,7 +44,7 @@
           {% contact_form %}
           {% for message in messages %}
            <span class="text-success">
-             {% if message == 'Подписка оформлена' %}{{message}}{% endif %}
+             {% if 'подписка оформлена' == message.message %}{{message}}{% endif %}
            </span>
           {% endfor %}
         </div>

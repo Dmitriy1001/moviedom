@@ -1,8 +1,13 @@
 {% extends 'catalog/base.html' %}
+{% load i18n catalog_filters %}
 
 {% block title %}
     {% if title %}
-        {{title}} | {{block.super}}
+        {% if page != 'search' %}
+            {{title}} | {{block.super}}
+        {% else %}
+             {% trans 'Поиск' %} - "{{title}}" | {{block.super}}
+        {% endif %}
     {% else %}
         {{block.super}}
     {% endif %}
@@ -11,44 +16,43 @@
 {% block content %}
     <div class="left-ads-display col-lg-9">
         <div class="row">
-<!--            {% if search_query %}-->
-<!--                <h2 class="sear-head editContent">-->
-<!--                    {% if movie_list %}-->
-<!--                        Результаты поиска по запросу "{{search_query}}"-->
-<!--                    {% else %}-->
-<!--                        По вашему запросу ничего не найдено-->
-<!--                    {% endif %}-->
-<!--                </h2>-->
-<!--            {% endif %}-->
-
-            {% for movie in movie_list %}
-                <div class="col-md-4 product-men">
-                    <div class="product-shoe-info editContent text-center mt-lg-4" >
-                        <div class="men-thumb-item">
-                            <img src="{{movie.poster.url}}" alt="" width="259px" height="325px">
-                        </div>
-                        <div class="item-info-product">
-                            <h4 class="">
-                                <a href="{{movie.get_absolute_url}}" class="editContent" >{{movie}}</a>
-                            </h4>
-                            <div class="product_price">
-                                <div class="grid-price">
-                                    {% if movie.tagline %}
-                                        <span class="money editContent" >«{{movie.tagline}}»</span>
-                                    {% endif %}
-                                </div>
+            {% if movie_list %}
+                {% for movie in movie_list %}
+                    <div class="col-md-4 product-men">
+                        <div class="product-shoe-info editContent text-center mt-lg-4" >
+                            <div class="men-thumb-item">
+                                <img src="{{movie.poster.url}}" alt="" width="259px" height="325px">
                             </div>
-                            <ul class="stars">
-                                <li><a href="#"><span class="fa fa-star" aria-hidden="true" ></span></a></li>
-                                <li><a href="#"><span class="fa fa-star" aria-hidden="true" ></span></a></li>
-                                <li><a href="#"><span class="fa fa-star-half-o" aria-hidden="true" ></span></a></li>
-                                <li><a href="#"><span class="fa fa-star-half-o" aria-hidden="true" ></span></a></li>
-                                <li><a href="#"><span class="fa fa-star-o" aria-hidden="true" ></span></a></li>
-                            </ul>
+                            <div class="item-info-product">
+                                <h4 class="">
+                                    <a href="{{movie.get_absolute_url}}" class="editContent" >{{movie}}</a>
+                                </h4>
+                                <div class="product_price">
+                                    <div class="grid-price">
+                                        {% if movie.tagline %}
+                                            <span class="money editContent" >«{{movie.tagline}}»</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <ul class="stars">
+                                    {% for _ in movie.rating_av|make_range %}
+                                        <li><a href="#"><span class="fa fa-star" aria-hidden="true" ></span></a></li>
+                                    {% endfor %}
+                                    {% for _ in movie.rating_av|change_number_sign|add:5|make_range %}
+                                        <li><a href="#"><span class="fa fa-star-o" aria-hidden="true" ></span></a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+
+            {% else %}
+                <h2 class="ml-5">
+                    {% trans 'Не найдено ни одного фильма' %}
+                    {% if page == 'search' %}{% trans 'по запросу' %} "{{title}}"{% endif %}
+                </h2>
+            {% endif %}
         </div>
         <br>
         <div class="d-flex justify-content-center">
