@@ -48,10 +48,10 @@
         {% for star in stars %}
             <li>
                 <a href="{% url 'filter_movies_list' model='star' model_url=star.url %}">
-                    {% for _ in star.value|make_range %}
+                    {% for _ in star.star_value|make_range %}
                         <span class="fa fa-star" aria-hidden="true"></span>
                     {% endfor %}
-                    {% for _ in star.value|change_number_sign|add:5|make_range %}
+                    {% for _ in star.star_value|change_number_sign|add:5|make_range %}
                         <span class="fa fa-star-o" aria-hidden="true"></span>
                     {% endfor %}
                 </a>

@@ -133,6 +133,3 @@ class ReviewAdmin(admin.ModelAdmin):
 
 admin.site.site_title = 'MovieDom'
 admin.site.site_header = 'MovieDom'
-
-
-

@@ -24,9 +24,6 @@ def get_stars():
 def get_years_n_last_movies():
     movies = Movie.objects.filter(moderation=True)
     return {
-        'years': sorted(set([year['year'] for year in movies.values('year')]), reverse=True),
+        'years': sorted({year['year'] for year in movies.values('year')}, reverse=True),
         'last_movies': movies[:5],
     }
-
-
-

@@ -1,6 +1,6 @@
 from modeltranslation.translator import register, TranslationOptions
 
-from .models import *
+from .models import Category, Country, Actor, Director, Genre, Movie
 
 
 @register(Category)

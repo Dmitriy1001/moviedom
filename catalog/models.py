@@ -43,7 +43,7 @@ class Country(models.Model):
 
 class Director(models.Model):
     name = models.CharField(max_length=255, verbose_name='ФИО')
-    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка', null=True)
+    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка')
     photo = models.ImageField(upload_to='directors', blank=True, null=True, verbose_name='фото')
     about = models.TextField(blank=True, verbose_name='биография')
 
@@ -62,7 +62,7 @@ class Director(models.Model):
 
 class Actor(models.Model):
     name = models.CharField(max_length=255, verbose_name='ФИО')
-    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка', null=True)
+    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка')
     photo = models.ImageField(upload_to='actors', blank=True, null=True, verbose_name='Фото')
     about = models.TextField(blank=True, verbose_name='Биография')
 
@@ -118,13 +118,13 @@ class Movie(models.Model):
 
 
 class RatingStar(models.Model):
-    value = models.PositiveSmallIntegerField(default=0, unique=True, verbose_name='Значение')
+    star_value = models.PositiveSmallIntegerField(default=0, unique=True, verbose_name='Значение')
     url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка')
 
     class Meta:
         verbose_name = 'звезду рейтинга'
         verbose_name_plural = 'здезды рейтинга'
-        ordering = ('-value',)
+        ordering = ('-star_value',)
 
     def save(self, *args, **kwargs):
         if not self.url:
@@ -132,7 +132,7 @@ class RatingStar(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.value)
+        return str(self.star_value)
 
 
 class Rating(models.Model):
@@ -164,7 +164,7 @@ class Review(models.Model):
         Movie,
         related_name='reviews',
         on_delete=models.CASCADE,
-        verbose_name='Фильм'
+        verbose_name='Фильм',
     )
     email = models.EmailField(blank=True, verbose_name='Почта')
     name = models.CharField(max_length=255, verbose_name='Имя')
@@ -188,8 +188,3 @@ class Review(models.Model):
                 f'{self.name} про "{self.movie}" - '
                 f'{self.posted.strftime("%d %b %Yг. %H:%M")}'
         )
-
-
-
-
-

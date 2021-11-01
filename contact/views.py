@@ -10,5 +10,3 @@ class ContactView(SuccessMessageMixin, CreateView):
     form_class = ContactForm
     success_url = '/#contact-form'
     success_message = "подписка оформлена"
-
-

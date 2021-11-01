@@ -19,7 +19,7 @@ class MovieList(ListView):
     def get_queryset(self):
         return (
             self.model.objects.filter(moderation=True)
-            .annotate(rating_av=Avg('rating__star__value'))
+            .annotate(rating_av=Avg('rating__star__star_value'))
         )
 
 
@@ -43,12 +43,12 @@ class FilterMovieList(MovieList):
             raise Http404(f'{model._meta.verbose_name} не найдено')
         if not isinstance(model_instance, RatingStar):
             self.kwargs['title'] = model_instance.name
-            movies = model_instance.movies.annotate(rating_av=Avg('rating__star__value'))
+            movies = model_instance.movies.annotate(rating_av=Avg('rating__star__star_value'))
         else:
-            self.kwargs['title'] = f'{model_instance.value}'
+            self.kwargs['title'] = f'{model_instance.star_value}'
             movies = (
-                Movie.objects.annotate(rating_av=Avg('rating__star__value'))
-                .filter(rating_av=model_instance.value)
+                Movie.objects.annotate(rating_av=Avg('rating__star__star_value'))
+                .filter(rating_av=model_instance.star_value)
             )
         return movies.filter(moderation=True)
 
@@ -70,9 +70,11 @@ class MultipleFilterMovieList(MovieList):
         elif not genre and year:
             queryset = Movie.objects.filter(year__in=year)
         elif genre and year:
-            queryset = Movie.objects.filter(year__in=year, genre__in=genre)
-        movies = queryset.distinct()
-        return movies.filter(moderation=True).annotate(rating_av=Avg('rating__star__value'))
+            queryset = Movie.objects.filter(genre__in=genre, year__in=year)
+        return (
+            queryset.distinct().filter(moderation=True)
+            .annotate(rating_av=Avg('rating__star__star_value'))
+        )
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,8 +89,8 @@ class SearchMovieList(MovieList):
             query = self.request.GET['search'].strip()
         except KeyError:
             query = ''
-        movies = Movie.objects.filter(Q(title__icontains=query)|Q(description__icontains=query))
-        return movies.filter(moderation=True).annotate(rating_av=Avg('rating__star__value'))
+        movies = Movie.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+        return movies.filter(moderation=True).annotate(rating_av=Avg('rating__star__star_value'))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -149,10 +151,8 @@ class AddStarRating(View):
             Rating.objects.update_or_create(
                 ip=self.get_client_ip(request),
                 movie_id=int(request.POST.get("movie")),
-                defaults={'star_id': int(request.POST.get("star"))}
+                defaults={'star_id': int(request.POST.get("star"))},
             )
             return HttpResponse(status=201)
         else:
             return HttpResponse(status=400)
-
-
