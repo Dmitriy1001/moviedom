@@ -1,8 +1,8 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import CreateView
 
-from .models import Contact
 from .forms import ContactForm
+from .models import Contact
 
 
 class ContactView(SuccessMessageMixin, CreateView):

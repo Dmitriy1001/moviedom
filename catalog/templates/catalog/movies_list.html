@@ -4,7 +4,7 @@
 {% block title %}
     {% if title %}
         {% if page != 'search' %}
-            {{title}} | {{block.super}}
+            {{title}} {% if model == 'star' %}&#9733;{% endif %} | {{block.super}}
         {% else %}
              {% trans 'Поиск' %} - "{{title}}" | {{block.super}}
         {% endif %}

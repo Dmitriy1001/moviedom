@@ -1,13 +1,13 @@
 import re
 
-from django.db.models import Q, Sum, Count, Avg
+from django.db.models import Q, Count, Avg
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import ListView, DetailView
 
 from .forms import ReviewForm, RatingForm
-from .models import Movie, Category, Genre, Country, Director, Actor, Rating
+from .models import Movie, Category, Genre, Country, Director, Actor, Rating, RatingStar
 
 
 class MovieList(ListView):
@@ -16,21 +16,11 @@ class MovieList(ListView):
     template_name = 'catalog/movies_list.html'
     extra_context = {'page': 'index', 'params': '?page', 'index_page': True}
 
-    def add_average_rating(self, queryset):
-        for movie in queryset:
-            rating_list = [rating.star.value for rating in movie.rating.all()]
-            try:
-                movie.rating_av = round(sum(rating_list) / len(rating_list))
-            except ZeroDivisionError:
-                movie.rating_av = 0
-        return queryset
-
     def get_queryset(self):
-        movies = (
-            Movie.objects.filter(moderation=True)
+        return (
+            self.model.objects.filter(moderation=True)
             .annotate(rating_av=Avg('rating__star__value'))
         )
-        return movies
 
 
 class FilterMovieList(MovieList):
@@ -39,7 +29,8 @@ class FilterMovieList(MovieList):
         'genre': Genre,
         'country': Country,
         'director': Director,
-        'actor': Actor
+        'actor': Actor,
+        'star': RatingStar,
     }
 
     def get_queryset(self):
@@ -50,14 +41,20 @@ class FilterMovieList(MovieList):
             raise Http404
         except model.DoesNotExist:
             raise Http404(f'{model._meta.verbose_name} не найдено')
-        self.kwargs['title'] = model_instance.name
-        return (
-            model_instance.movies.filter(moderation=True)
-            .annotate(rating_av=Avg('rating__star__value'))
-        )
+        if not isinstance(model_instance, RatingStar):
+            self.kwargs['title'] = model_instance.name
+            movies = model_instance.movies.annotate(rating_av=Avg('rating__star__value'))
+        else:
+            self.kwargs['title'] = f'{model_instance.value}'
+            movies = (
+                Movie.objects.annotate(rating_av=Avg('rating__star__value'))
+                .filter(rating_av=model_instance.value)
+            )
+        return movies.filter(moderation=True)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['model'] = self.kwargs['model']
         context['page'] = 'category'
         context['title'] = self.kwargs['title']
         context['params'] = '?page'
@@ -116,7 +113,7 @@ class MovieDetail(DetailView):
         self.kwargs['title'] = movie.category.name
         return movie
 
-    def post(self, request, **kwargs):
+    def post(self, request):
         movie = self.get_object()
         form = self.form_class(request.POST)
         if form.is_valid():

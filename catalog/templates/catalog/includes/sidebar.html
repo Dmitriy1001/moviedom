@@ -1,4 +1,4 @@
-{% load catalog_tags i18n %}
+{% load catalog_tags catalog_filters i18n %}
 
 <div class="search-bar w3layouts-newsletter">
   <h3 class="sear-head editContent">{% trans 'Поиск фильма' %}</h3>
@@ -7,6 +7,8 @@
     <button class="btn1 btn" type="submit"><span class="fa fa-search" aria-hidden="true"></span></button>
   </form>
 </div>
+
+{% get_years_n_last_movies as years_n_last_movies  %}
 
 <form action="{% url 'multiple_filter_movies_list' %}">
     <div class="left-side my-4">
@@ -21,8 +23,6 @@
             {% endfor %}
         </ul>
     </div>
-
-    {% get_years_n_last_movies as years_n_last_movies  %}
 
     <div class="left-side">
         <h3 class="sear-head editContent">{% trans 'Год' %}</h3>
@@ -43,57 +43,20 @@
 
 <div class="customer-rev left-side my-4">
     <h3 class="sear-head editContent">{% trans 'Рейтинг' %}</h3>
+    {% get_stars as stars %}
     <ul class="w3layouts-box-list">
-        <li>
-            <a href="#">
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="editContent" >5.0</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star-o" aria-hidden="true" ></span>
-                <span class="editContent" >4.0</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star-half-o" aria-hidden="true" ></span>
-                <span class="fa fa-star-o" aria-hidden="true" ></span>
-                <span class="editContent" >3.5</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star" aria-hidden="true"></span>
-                <span class="fa fa-star-o" aria-hidden="true" ></span>
-                <span class="fa fa-star-o" aria-hidden="true" ></span>
-                <span class="editContent" >3.0</span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="fa fa-star" aria-hidden="true"></span>
-                <span class="fa fa-star" aria-hidden="true" ></span>
-                <span class="fa fa-star-half-o" aria-hidden="true" ></span>
-                <span class="fa fa-star-o" aria-hidden="true" ></span>
-                <span class="fa fa-star-o" aria-hidden="true" ></span>
-                <span class="editContent" >2.5</span>
-            </a>
-        </li>
+        {% for star in stars %}
+            <li>
+                <a href="{% url 'filter_movies_list' model='star' model_url=star.url %}">
+                    {% for _ in star.value|make_range %}
+                        <span class="fa fa-star" aria-hidden="true"></span>
+                    {% endfor %}
+                    {% for _ in star.value|change_number_sign|add:5|make_range %}
+                        <span class="fa fa-star-o" aria-hidden="true"></span>
+                    {% endfor %}
+                </a>
+            </li>
+        {% endfor %}
     </ul>
 </div>
 

@@ -217,14 +217,14 @@ CKEDITOR_CONFIGS = {
         # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
         'tabSpaces': 4,
         'extraPlugins': ','.join([
-            'uploadimage', # the upload image feature
-            # your extra plugins here
+            'uploadimage',  # the upload image feature
+            #  your extra plugins here
             'div',
             'autolink',
             'autoembed',
             'embedsemantic',
             'autogrow',
-            # 'devtools',
+            #  'devtools',
             'widget',
             'lineutils',
             'clipboard',
@@ -233,7 +233,7 @@ CKEDITOR_CONFIGS = {
             'elementspath',
             'youtube',
         ]),
-    }
+    },
 }
 
 RECAPTCHA_PUBLIC_KEY = '6Lf2leEcAAAAAHRq8TIYr-WQoa7rWphPe8m_KJFh'

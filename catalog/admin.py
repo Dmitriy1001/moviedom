@@ -1,11 +1,10 @@
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-
-from .models import Category, Genre, Movie, Actor, Director, Country, RatingStar, Rating, Review
 from modeltranslation.admin import TranslationAdmin
 
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from .models import Category, Genre, Movie, Actor, Director, Country, RatingStar, Rating, Review
 
 
 class MovieAdminForm(forms.ModelForm):
@@ -82,7 +81,7 @@ class MovieAdmin(TranslationAdmin):
         if row_update == 1:
             message_bit = '1 запись обновлена'
         else:
-            message_bit = f''
+            message_bit = f'записей обновлено - {row_update}'
         self.message_user(request, message_bit)
 
     def publish(self, request, queryset):
@@ -96,9 +95,14 @@ class MovieAdmin(TranslationAdmin):
     def get_poster(self, movie):
         return mark_safe(f'<img src={movie.poster.url} width="70" height="80">')
 
-    genres = lambda self, movie: ', '.join(map(str, movie.genre.all()))
-    directors = lambda self, movie: ', '.join(map(str, movie.director.all()))
-    countries = lambda self, movie: ', '.join(map(str, movie.country.all()))
+    def genres(self, movie):
+        return ', '.join(map(str, movie.genre.all()))
+
+    def directors(self, movie):
+        return ', '.join(map(str, movie.director.all()))
+
+    def countries(self, movie):
+        return ', '.join(map(str, movie.country.all()))
 
     unpublish.short_description = 'Опубликовать'
     publish.short_description = 'Снять с публикации'

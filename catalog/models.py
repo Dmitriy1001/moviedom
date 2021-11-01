@@ -119,11 +119,17 @@ class Movie(models.Model):
 
 class RatingStar(models.Model):
     value = models.PositiveSmallIntegerField(default=0, unique=True, verbose_name='Значение')
+    url = models.SlugField(unique=True, max_length=255, verbose_name='Ссылка')
 
     class Meta:
         verbose_name = 'звезду рейтинга'
         verbose_name_plural = 'здезды рейтинга'
         ordering = ('-value',)
+
+    def save(self, *args, **kwargs):
+        if not self.url:
+            self.url = f'{self.value}_star'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return str(self.value)

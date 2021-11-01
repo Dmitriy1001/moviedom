@@ -1,6 +1,6 @@
 from django import template
 
-from catalog.models import Category, Genre, Movie
+from catalog.models import Category, Genre, Movie, RatingStar
 
 register = template.Library()
 
@@ -13,6 +13,11 @@ def get_categories():
 @register.simple_tag()
 def get_genres():
     return Genre.objects.all()
+
+
+@register.simple_tag()
+def get_stars():
+    return RatingStar.objects.all()
 
 
 @register.simple_tag()

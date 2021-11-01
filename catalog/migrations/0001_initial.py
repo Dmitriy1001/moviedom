@@ -91,7 +91,10 @@ class Migration(migrations.Migration):
                 ('actors', models.ManyToManyField(related_name='movies', to='catalog.Actor', verbose_name='Актеры')),
                 ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='catalog.category', verbose_name='Категория')),
                 ('country', models.ManyToManyField(related_name='movies', to='catalog.Country', verbose_name='Страна')),
-                ('directors', models.ManyToManyField(related_name='movies', to='catalog.Director', verbose_name='Режиссер')),
+                (
+                    'directors',
+                    models.ManyToManyField(related_name='movies', to='catalog.Director', verbose_name='Режиссер'),
+                ),
                 ('genres', models.ManyToManyField(related_name='movies', to='catalog.Genre', verbose_name='Жанры')),
             ],
             options={

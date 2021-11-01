@@ -23,7 +23,6 @@ class DirectorTranslationOptions(TranslationOptions):
     fields = ('name', 'about')
 
 
-
 @register(Genre)
 class GenreTranslationOptions(TranslationOptions):
     fields = ('name', 'description')
