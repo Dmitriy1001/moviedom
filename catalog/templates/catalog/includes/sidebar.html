@@ -22,14 +22,15 @@
         </ul>
     </div>
 
+    {% get_years_n_last_movies as years_n_last_movies  %}
+
     <div class="left-side">
         <h3 class="sear-head editContent">{% trans 'Год' %}</h3>
-        {% get_years as years %}
         <ul class="w3layouts-box-list">
-            {% for year in years %}
+            {% for year in years_n_last_movies.years %}
                 <li class="editContent" >
-                    <input type="checkbox" class="checked" name="year" value="{{year.year}}">
-                    <span class="span editContent" >{{year.year}}</span>
+                    <input type="checkbox" class="checked" name="year" value="{{year}}">
+                    <span class="span editContent">{{year}}</span>
                 </li>
             {% endfor %}
         </ul>
@@ -98,8 +99,7 @@
 
 <div class="deal-leftmk left-side">
     <h3 class="sear-head editContent">{% trans 'Последние добавленные' %}</h3>
-    {% get_last_movies as last_movies %}
-    {% for movie in last_movies %}
+    {% for movie in years_n_last_movies.last_movies %}
         <div class="special-sec1 row mt-3 editContent">
             <div class="img-deals col-md-4">
                 <a href="{{movie.get_absolute_url}}">

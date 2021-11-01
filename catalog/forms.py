@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Count
 
 from catalog.models import Review, Rating, RatingStar
 
@@ -21,7 +22,7 @@ class ReviewForm(forms.ModelForm):
 
 class RatingForm(forms.ModelForm):
     star = forms.ModelChoiceField(
-        queryset=RatingStar.objects.all(),
+        queryset=RatingStar.objects.annotate(__count=Count('*')),
         widget=forms.RadioSelect(),
         empty_label=None,
     )

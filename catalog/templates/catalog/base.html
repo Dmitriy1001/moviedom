@@ -30,6 +30,23 @@
     <!-- //Fonts -->
     {% recaptcha_init %}
     {% recaptcha_ready action_name='homepage' %}
+    <style>
+            .bg1 {
+                background-color: rgba(0, 0, 0, 0);
+                margin-top: 0px;
+                background-image:
+                {% if page != 'search' %}
+                    {% if title == 'Фильмы' or title == 'Movies' %}url("{% static 'images/movies_banner.jpg' %}");
+                    {% elif title == 'Cartoons' or title == 'Мультфильмы' %}url("{% static 'images/cartoons_banner.jpg' %}");
+                    {% elif title == 'Series' or title == 'Сериалы' %}url("{% static 'images/series_banner.webp' %}");
+                    {% elif title == 'Documentary' or title == 'Документалки' %}url("{% static 'images/documentary_banner.jpg' %}");
+                    {% else %}url("{% static 'images/main_banner.jpg' %}");
+                    {% endif %}
+                {% else %}
+                    url("{% static 'images/main_banner.jpg' %}");
+                {% endif %}
+            }
+    </style>
 </head>
 
 <body>

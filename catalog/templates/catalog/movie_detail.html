@@ -27,7 +27,7 @@
                             <span style="font-weight:700;">{% trans 'Страна' %}:</span>
                             {% for country in movie.country.all %}
                                 <a href="{% url 'filter_movies_list' model='country' model_url=country.url %}" class="related-obj">
-                                    {{country}}{% if movie.country.all.last != country %}, {% endif %}
+                                    {{country}}{% if not forloop.last %}, {% endif %}
                                 </a>
                             {% endfor %}
                         </span>
@@ -42,7 +42,7 @@
                             <span style="font-weight:700;">{% trans 'Режиссер' %}:</span>
                             {% for director in movie.director.all %}
                                 <a href="{% url 'filter_movies_list' 'director' director.url %}" class="related-obj">
-                                    {{director}}{% if movie.director.all.last != director %}, {% endif %}
+                                    {{director}}{% if not forloop.last %}, {% endif %}
                                 </a>
                             {% endfor %}
                         </span>
@@ -52,7 +52,7 @@
                             <span style="font-weight:700;">{% trans 'Актеры' %}:</span>
                             {% for actor in movie.actors.all %}
                                 <a href="{% url 'filter_movies_list' 'actor' actor.url %}" class="related-obj">
-                                    {{actor}}{% if movie.actors.all.last != actor %}, {% endif %}
+                                    {{actor}}{% if not forloop.last %}, {% endif %}
                                 </a>
                             {% endfor %}
                         </span>
@@ -62,7 +62,7 @@
                             <span style="font-weight:700;">{% trans 'Жанр' %}:</span>
                             {% for genre in movie.genre.all %}
                                 <a href="{% url 'filter_movies_list' 'genre' genre.url %}" class="related-obj">
-                                    {{genre}}{% if movie.genre.all.last != genre %}, {% endif %}
+                                    {{genre}}{% if not forloop.last %}, {% endif %}
                                 </a>
                             {% endfor %}
                         </span>
@@ -89,9 +89,9 @@
                             {% csrf_token %}
                             <input type="hidden" value="{{ movie.id }}" name="movie">
                             <span class="rating">
-                                {% for k, v in star_form.fields.star.choices %}
-                                    <input id="rating{{ v }}" type="radio" name="star" value="{{ k }}">
-                                    <label for="rating{{ v }}">{{ k }}</label>
+                                {% for id, value in star_form.fields.star.choices %}
+                                    <input id="rating{{ value }}" type="radio" name="star" value="{{ id }}">
+                                    <label for="rating{{ value }}">{{ id }}</label>
                                 {% endfor %}
                             </span>
                             <span class="editContent"></span>
@@ -146,5 +146,4 @@
             document.getElementById("contactcomment").innerText = `${name}, `;
         }
     </script>
-
 {% endblock %}

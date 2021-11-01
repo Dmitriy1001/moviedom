@@ -1,4 +1,5 @@
 from django import template
+
 from catalog.models import Category, Genre, Movie
 
 register = template.Library()
@@ -15,12 +16,12 @@ def get_genres():
 
 
 @register.simple_tag()
-def get_years():
-    return Movie.objects.values('year').distinct().order_by('-year')
+def get_years_n_last_movies():
+    movies = Movie.objects.filter(moderation=True)
+    return {
+        'years': sorted(set([year['year'] for year in movies.values('year')]), reverse=True),
+        'last_movies': movies[:5],
+    }
 
-
-@register.simple_tag()
-def get_last_movies():
-    return Movie.objects.order_by('-id')[:5]
 
 

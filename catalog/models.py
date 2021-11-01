@@ -105,12 +105,13 @@ class Movie(models.Model):
     class Meta:
         verbose_name = 'фильм'
         verbose_name_plural = 'фильмы'
+        ordering = ('-id',)
 
     def get_absolute_url(self):
         return reverse('movie_detail', kwargs={'movie_url': self.url})
 
     def get_review(self):
-        return self.reviews.filter(parent__isnull=True)
+        return self.reviews.filter(parent__isnull=True).prefetch_related('reviews')
 
     def __str__(self):
         return self.title
@@ -129,7 +130,7 @@ class RatingStar(models.Model):
 
 
 class Rating(models.Model):
-    ip = models.CharField(unique=True, max_length=15, verbose_name='IP адрес')
+    ip = models.CharField(max_length=15, verbose_name='IP адрес')
     star = models.ForeignKey(
         RatingStar,
         related_name='rating',

@@ -1,6 +1,6 @@
 import re
 
-from django.db.models import Q
+from django.db.models import Q, Sum, Count, Avg
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
@@ -26,8 +26,11 @@ class MovieList(ListView):
         return queryset
 
     def get_queryset(self):
-        movies = Movie.objects.prefetch_related('rating')
-        return self.add_average_rating(movies)
+        movies = (
+            Movie.objects.filter(moderation=True)
+            .annotate(rating_av=Avg('rating__star__value'))
+        )
+        return movies
 
 
 class FilterMovieList(MovieList):
@@ -48,8 +51,10 @@ class FilterMovieList(MovieList):
         except model.DoesNotExist:
             raise Http404(f'{model._meta.verbose_name} не найдено')
         self.kwargs['title'] = model_instance.name
-        movies = model_instance.movies.all()
-        return self.add_average_rating(movies)
+        return (
+            model_instance.movies.filter(moderation=True)
+            .annotate(rating_av=Avg('rating__star__value'))
+        )
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -70,7 +75,7 @@ class MultipleFilterMovieList(MovieList):
         elif genre and year:
             queryset = Movie.objects.filter(year__in=year, genre__in=genre)
         movies = queryset.distinct()
-        return self.add_average_rating(movies)
+        return movies.filter(moderation=True).annotate(rating_av=Avg('rating__star__value'))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -86,7 +91,7 @@ class SearchMovieList(MovieList):
         except KeyError:
             query = ''
         movies = Movie.objects.filter(Q(title__icontains=query)|Q(description__icontains=query))
-        return self.add_average_rating(movies)
+        return movies.filter(moderation=True).annotate(rating_av=Avg('rating__star__value'))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -102,7 +107,14 @@ class MovieDetail(DetailView):
     form_class = ReviewForm
 
     def get_object(self, queryset=None):
-        return Movie.objects.get(url=self.kwargs['movie_url'])
+        movie = (
+            Movie.objects.prefetch_related('country', 'director', 'actors', 'genre')
+            .select_related('category')
+            .annotate(reviews_count=Count('reviews'))
+            .get(url=self.kwargs['movie_url'])
+        )
+        self.kwargs['title'] = movie.category.name
+        return movie
 
     def post(self, request, **kwargs):
         movie = self.get_object()
@@ -119,7 +131,7 @@ class MovieDetail(DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page'] = 'category'
-        context['title'] = self.get_object().category.name
+        context['title'] = self.kwargs['title']
         context['star_form'] = RatingForm()
         context['form'] = ReviewForm()
         return context
@@ -128,12 +140,10 @@ class MovieDetail(DetailView):
 class AddStarRating(View):
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        print(request.META)
         if x_forwarded_for:
             ip = x_forwarded_for.split(',')[0]
         else:
             ip = request.META.get('REMOTE_ADDR')
-        print(ip)
         return ip
 
     def post(self, request):
